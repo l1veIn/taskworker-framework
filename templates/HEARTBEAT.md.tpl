@@ -1,14 +1,9 @@
-# HEARTBEAT.md - Signal Channel
+# HEARTBEAT.md - Signal Channel (Deprecated in v2)
 
-## 说明
-此文件由外部系统写入信号，Agent 读取后应立即清空。
+## 注意
+TaskWorker Protocol v2+ 使用直接消息通知，此文件保持为空即可。
 
-## 有效信号
-- `[系统] 检查任务列表` → 触发任务查询流程
-- `[系统] 紧急暂停` → 暂停当前工作，保存状态
-- `[系统] 配置重载` → 重新读取配置文件
+Agent 通过 `openclaw agent --message` 接收任务通知。
 
-## 当前状态
-[等待信号...]
-
-## 历史记录
+## 保留原因
+向后兼容，部分旧版 Agent 可能仍依赖此文件。
