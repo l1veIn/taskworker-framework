@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 """
-Taskwarrior on-add hook - 直接通知匹配的 TaskWorker Agent
+Taskwarrior on-add hook - 直接通知 TaskWorker Agent (v0.3.0)
 
-安装: cp this_file ~/.task/hooks/on-add-notify.py
-      chmod +x ~/.task/hooks/on-add-notify.py
-
-更新记录:
-- v0.2.0: 改用 openclaw agent --message 直接通知，移除 HEARTBEAT.md 中转
-- v0.1.0: 初始版本，使用 HEARTBEAT.md 信号
+发送可直接执行的命令给 Agent，Agent 收到后立即执行。
 """
 
 import json
@@ -46,13 +41,22 @@ def get_matched_agents(task_tags):
     return matched
 
 
-def notify_agent(agent_name, task_uuid):
-    """直接发送消息到 Agent"""
+def notify_agent(agent_name, task_uuid, task_tags):
+    """发送可直接执行的命令到 Agent"""
+    # 构建可直接执行的检查命令
+    tags_filter = ','.join(task_tags)
+    command = f"task export {task_uuid} status:pending"
+    
+    message = f"""[TASK_ASSIGN] {task_uuid}
+TAGS: {tags_filter}
+ACTION: Run `{command}` to fetch and process this task.
+"""
+    
     try:
         result = subprocess.run(
             ['openclaw', 'agent',
              '--agent', agent_name,
-             '--message', f'[TASK] {task_uuid}',
+             '--message', message,
              '--deliver',
              '--timeout', '10'],
             capture_output=True,
@@ -70,17 +74,8 @@ def main():
     uuid = task.get('uuid', 'unknown')
     tags = task.get('tags', [])
     
-    # 匹配并直接通知 Agents
-    notified = []
-    failed = []
-    
     for agent_name in get_matched_agents(tags):
-        if notify_agent(agent_name, uuid):
-            notified.append(agent_name)
-        else:
-            failed.append(agent_name)
-    
-    # 静默处理失败，Agent 下次活跃时会自行检查队列
+        notify_agent(agent_name, uuid, tags)
     
     print(json.dumps(task))
 

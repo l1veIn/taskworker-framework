@@ -32,3 +32,22 @@ cp bin/tw-hook.py ~/.task/hooks/on-add-notify.py
 - ✅ 被动唤醒节省 token
 - ✅ 审计字段可追溯
 - ✅ 拒绝优于失败原则有效
+
+## [0.3.0] - 2026-03-03
+
+### Changed
+- 消息内容直接包含可执行命令，Agent 收到后立即执行
+- 简化 Agent 处理逻辑：解析 → 执行 → 处理
+- 移除中文描述，使用简洁的英文标记
+
+### Message Format
+```
+[TASK_ASSIGN] {uuid}
+TAGS: {tags}
+ACTION: Run `{command}` to fetch and process this task.
+```
+
+### Benefits
+- Agent 无需理解自然语言，直接执行命令
+- 更精确，无歧义
+- 更容易调试和日志记录
