@@ -51,3 +51,26 @@ ACTION: Run `{command}` to fetch and process this task.
 - Agent 无需理解自然语言，直接执行命令
 - 更精确，无歧义
 - 更容易调试和日志记录
+
+## [0.4.0] - 2026-03-03
+
+### Changed
+- Replace Python hook with pure Bash (34 lines vs 60+)
+- Simplified message format: `[TASK_ASSIGN] {uuid} + Run: {command}`
+- Removed all complex parsing, use simple grep/awk/sed
+- No dependencies except standard Unix tools
+
+### Hook Comparison
+| | v3 (Python) | v4 (Bash) |
+|--|-------------|-----------|
+| Lines | ~60 | 34 |
+| Dependencies | python3 | none (standard tools) |
+| Complexity | Medium | Low |
+| Maintainability | Good | Excellent |
+
+### Migration
+```bash
+# Simply replace the hook
+cp bin/tw-hook.sh ~/.task/hooks/on-add-notify.sh
+chmod +x ~/.task/hooks/on-add-notify.sh
+```
