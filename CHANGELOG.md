@@ -74,3 +74,30 @@ ACTION: Run `{command}` to fetch and process this task.
 cp bin/tw-hook.sh ~/.task/hooks/on-add-notify.sh
 chmod +x ~/.task/hooks/on-add-notify.sh
 ```
+
+## [0.5.0] - 2026-03-03
+
+### Changed
+- **CRITICAL**: Enforce strict single-task workflow
+- Agent processes ONLY the UUID from message, never queries queue
+- One activation = One task = Stop
+- Removed all "check for more tasks" logic
+- Emphasize predictability over efficiency
+
+### Protocol v5
+```
+RECEIVE → CLAIM_ONE → EXECUTE → COMPLETE → STOP
+```
+
+**Forbidden**:
+- Querying pending tasks
+- Batch processing
+- Optimization shortcuts
+
+**Required**:
+- Exact 5-step protocol
+- One task per message
+- Explicit stop after completion
+
+### Why?
+Rigid agents = Predictable behavior = Debuggable systems
